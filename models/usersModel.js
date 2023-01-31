@@ -11,6 +11,7 @@ const users = [
     new User(2,"Mary","mary@m.pt","abc"),
     new User(3,"Bob","bob@mail.pt","god")
 ];
+
 module.exports.getAll = async function getAll() {
     try {
         let result = [];
