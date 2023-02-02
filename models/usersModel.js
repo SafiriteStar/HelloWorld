@@ -16,7 +16,7 @@ module.exports.getAll = async function getAll() {
     try {
         let result = [];
         for(let user of users ){
-            result.push(new User(user.id,user.name,user.email));
+            result.push(new User(user.id, user.name, user.email));
         }
         return {status: 200, result: result};
     } catch (err) {
