@@ -1,10 +1,4 @@
 {
-  "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "morgan": "^1.10.0"
-  },
   "name": "helloworld",
   "description": "Web Programming Test Repo",
   "version": "1.0.0",
@@ -23,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/SafiriteStar/HelloWorld/issues"
   },
-  "homepage": "https://github.com/SafiriteStar/HelloWorld#readme"
+  "homepage": "https://github.com/SafiriteStar/HelloWorld#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  }
 }
