@@ -6,6 +6,7 @@ function cardFromDB(dbObj) {
         dbObj.crd_level, dbObj.crd_cost, dbObj.crd_timeout,
         dbObj.crd_max_usage, dbObj.crd_type);
 }
+
 class Card {
     constructor(id, name, url, lore, description, level,
         cost, timeout, maxUsage, type) {
@@ -21,10 +22,81 @@ class Card {
         this.type = type;
     }
 
+    static async save(newCard) {
+        try {
+            let [dbCards, fields] =
+                await pool.query("Select * from cards where crd_name=?", [newCard.name]);
+            if (dbCards.length)
+                return {
+                    status: 400, result: [{
+                        location: "body", param: "name",
+                        msg: "That name already exists"
+                    }]
+                };
+            let [result] =
+                await pool.query(`Insert into cards (crd_name, crd_img_url, crd_lore, 
+                crd_description, crd_level, crd_cost, crd_timeout, crd_max_usage, crd_type)
+                values (?,?,?,?,?,?,?,?,?)`, [newCard.name, newCard.url, newCard.lore,
+                newCard.description, newCard.level, newCard.cost, newCard.timeout,
+                newCard.maxUsage, newCard.type]);
+            return { status: 200, result: result };
+        } catch (err) {
+            console.log(err);
+            return { status: 500, result: err };
+        }
+    }
+
     static async getAll() {
         try {
             let result = [];
             let [dbCards, fields] = await pool.query("Select * from cards");
+            for (let dbCard of dbCards) {
+                result.push(cardFromDB(dbCard));
+            }
+            return { status: 200, result: result };
+        } catch (err) {
+            console.log(err);
+            return { status: 500, result: err };
+        }
+    }
+
+    static async getById(id) {
+        try {
+            let [dbCards,fields] = 
+                await pool.query("Select * from cards where crd_id=?",[id]);
+            if (!dbCards)
+                return {status:404, result: {msg: "No card found with that identifier"}};
+            let dbCard = dbCards[0];
+            let result = cardFromDB(dbCard);
+            return {status: 200, result: result};
+        } catch (err) {
+            console.log(err);
+            return {status: 500, result: err };
+        }
+    }
+
+    static async filterByType(typeId) {
+        try {
+            let result = [];
+            let [dbCards, fields] =
+                await pool.query("Select * from cards where crd_type=?", [typeId]);
+            for (let dbCard of dbCards) {
+                result.push(cardFromDB(dbCard));
+            }
+            return { status: 200, result: result };
+        } catch (err) {
+            console.log(err);
+            return { status: 500, result: err };
+        }
+    }
+
+    static async filterByLoreOrDescription(text) {
+        try {
+            let result = [];
+            let [dbCards] =
+                await pool.query(`Select * from cards 
+                where crd_description LIKE ? or crd_lore LIKE ?`, 
+                ['%'+text+'%','%'+text+'%']);
             for (let dbCard of dbCards) {
                 result.push(cardFromDB(dbCard));
             }
